@@ -14,6 +14,7 @@ void aStarManhattanDistance(){
     
 }
 
+//prints out the puzzle board
 void print(vector<int>& puzzle) {
     for (int i = 0; i < 9; i++) {
         if (i % 3 == 0){
@@ -23,9 +24,157 @@ void print(vector<int>& puzzle) {
     }
     cout << endl;
 }
+ 
+//used for UNIFORM SEARCH, bc no heuristic
+//replaces heuristic with 0
+//following general search algorithm from class
+void search(vector<int> puzzle) {
+    //making my queue (mineheap)
+    //stores depth+ heuristc and the current puzzle state
+    priority_queue<pair<int, vector<int>>, vector<pair<int, vector<int>>>, greater <pair<int, vector<int>>>> minHeap;
+    //reference to goal state
+    vector<int> goal = {1, 2, 3, 4, 5, 6, 7, 8, 0};
+    //keeps track of depths for each step in the puzzle
+    map<vector<int>, int> depth;
+    set<vector<int>> visited;
 
-void search(vector<int> puzzle, int heuristic) {
+    //making the head node (initial state of puzzle)
+    minHeap.push(make_pair(0, puzzle));
+    visited.insert(puzzle); //mark as done
+    depth[puzzle] = 0;
+
+    //moves for the tiles makes it easier for later
+    vector<int> xmoves= {0,0,1, -1};
+    vector<int> ymoves= { 1, -1, 0,0};
+
+    int nodesExpanded = 0;
+    int queueSize=0;
     
+    //my loop do, will return if empty
+    while(!minHeap.empty()){
+        //KEEPS the max val
+        queueSize = max(queueSize, (int)minHeap.size());
+        vector<int> curr = minHeap.top().second;
+        //remove the front
+        minHeap.pop();
+        nodesExpanded++;
+        //where we at
+        cout << "The best state to expand with a g(n) = " << depth[curr] << " and h(n) = " << 0 << " is..." << endl;
+        print(curr);
+
+        //check if were done !! (if goal test, return)
+        if(curr == goal){
+            cout << "Solved!" << endl;
+            cout<< "Solution Depth: " << depth[curr] << endl;
+            cout << "Nodes Expanded: " << nodesExpanded << endl;
+            cout << "Max Queue Size: " << queueSize << endl;
+            return; //done
+
+        }
+        //else, we are expanding
+        //now solving
+        //find the blank space within the vector
+        int blank= find (curr.begin(), curr.end(), 0) - curr.begin();
+        int blankX= blank / 3;
+        int blankY= blank % 3;
+
+        //iterates through possible moves
+        for(int i=0; i<4; i++){
+            int newX= blankX + xmoves[i];
+            int newY= blankY + ymoves[i];
+            //check if new position works
+            if(newX >= 0 && newX < 3 && newY >= 0 && newY < 3){
+                //perform a swap !! within the vector
+                vector<int> next = curr;
+                swap(next[blankX*3 + blankY], next[newX*3 + newY]);
+                //check if the new state has been visited
+                if(visited.find(next) == visited.end()){
+                    visited.insert(next);
+                    depth[next] = depth[curr] + 1;
+                    minHeap.push(make_pair(depth[next], next));
+                    
+                    
+                }
+            }
+        }
+
+
+    }
+}
+
+//used for A* SEARCH, bc has heuristic
+//following general search algorithm from class
+void search(vector<int> puzzle,function<int(vector<int>)> heuristic) {
+    //making my queue (mineheap)
+    //stores depth+ heuristc and the current puzzle state
+    priority_queue<pair<int, vector<int>>, vector<pair<int, vector<int>>>, greater <pair<int, vector<int>>>> minHeap;
+    //reference to goal state
+    vector<int> goal = {1, 2, 3, 4, 5, 6, 7, 8, 0};
+    //keeps track of depths for each step in the puzzle
+    map<vector<int>, int> depth;
+    set<vector<int>> visited;
+
+    //making the head node (initial state of puzzle)
+    minHeap.push(make_pair(heuristic(puzzle), puzzle));
+    visited.insert(puzzle); //mark as done
+    depth[puzzle] = 0;
+
+    //moves for the tiles makes it easier for later
+    vector<int> xmoves= {0,0,1, -1};
+    vector<int> ymoves= { 1, -1, 0,0};
+
+    int nodesExpanded = 0;
+    int queueSize=0;
+    
+    //my loop do, will return if empty
+    while(!minHeap.empty()){
+        //KEEPS the max val
+        queueSize = max(queueSize, (int)minHeap.size());
+        vector<int> curr = minHeap.top().second;
+        //remove the front
+        minHeap.pop();
+        nodesExpanded++;
+        //where we at
+        cout << "The best state to expand with a g(n) = " << depth[curr] << " and h(n) = " << heuristic(curr) << " is..." << endl;
+        print(curr);
+
+        //check if were done !! (if goal test, return)
+        if(curr == goal){
+            cout << "Solved!" << endl;
+            cout<< "Solution Depth: " << depth[curr] << endl;
+            cout << "Nodes Expanded: " << nodesExpanded << endl;
+            cout << "Max Queue Size: " << queueSize << endl;
+            return; //done
+
+        }
+        //else, we are expanding
+        //now solving
+        //find the blank space within the vector
+        int blank= find (curr.begin(), curr.end(), 0) - curr.begin();
+        int blankX= blank / 3;
+        int blankY= blank % 3;
+
+        //iterates through possible moves
+        for(int i=0; i<4; i++){
+            int newX= blankX + xmoves[i];
+            int newY= blankY + ymoves[i];
+            //check if new position works
+            if(newX >= 0 && newX < 3 && newY >= 0 && newY < 3){
+                //perform a swap !! within the vector
+                vector<int> next = curr;
+                swap(next[blank], next[newX*3 + newY]);
+                //check if the new state has been visited
+                if(visited.find(next) == visited.end()|| depth[next] > depth[curr] + 1){
+                      visited.insert(next);
+                    depth[next] = depth[curr] + 1;
+                    minHeap.push(make_pair(depth[next]+ heuristic(next), next));
+                  
+                }
+            }
+        }
+
+
+    }
 }
 
 int main(){
@@ -39,6 +188,7 @@ int main(){
     int num7=0;
     int num8=0;
     int num9=0;
+    //puzzle to solve
     vector<int> puzzle;
 
     
@@ -60,7 +210,7 @@ int main(){
     cout << "Enter 1 to use Uniform Cost Search, 2 to use A* with the Misplaced Tile heuristic, and 3 to use A* with the Manhattan Distance heuristic to solve the eight puzzle: "<< endl;
     cin >> userChoice;
     if(userChoice == 1){
-        search(puzzle,0);
+        search(puzzle);
     }
     else if(userChoice == 2){
        // search(puzzle,);
