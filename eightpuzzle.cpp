@@ -98,7 +98,7 @@ void uniformCost(vector<int> puzzle) {
 
         }
         //else, we are expanding
-        //now solving
+        //now solving no need for for loop w find function!
         //find the blank space within the vector
         int blank= find (curr.begin(), curr.end(), 0) - curr.begin();
         int blankX= blank / 3;
