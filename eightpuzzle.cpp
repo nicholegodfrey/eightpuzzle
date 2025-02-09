@@ -6,11 +6,23 @@
 #include <algorithm>
 
 using namespace std;
-void aStarMisplacedTile(){
-    
-}
 
-void aStarManhattanDistance(){
+//returns heuristic val for misplaced tile
+int aStarMisplacedTile(vector<int> puzzle){
+    int val = 0;
+    for(int i = 0; i < 9; i++){
+        //dont care abt blank
+        if(puzzle[i] != 0){
+            //counts if any tile is in wrong spot
+            if(puzzle[i] != i+1){
+                val++;
+            }
+        }
+    }
+    return val;  
+}
+//returns heuristic val for manhattan
+int aStarManhattanDistance(vector<int> puzzle){
     
 }
 
@@ -190,6 +202,7 @@ int main(){
     int num9=0;
     //puzzle to solve
     vector<int> puzzle;
+    cout << "Would you like to use" << endl;
 
     
     cout << "Enter your 8 puzzle board. First enter in the first row, with 3 numbers and spaces between each number. Use 0 to represent the blank space." << endl;
@@ -213,7 +226,7 @@ int main(){
         search(puzzle);
     }
     else if(userChoice == 2){
-       // search(puzzle,);
+       search(puzzle, aStarMisplacedTile);
     }
     else if(userChoice == 3){
        // search(puzzle,);
