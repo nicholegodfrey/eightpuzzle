@@ -193,8 +193,9 @@ void generalSearch(vector<int> puzzle,function<int(vector<int>)> heuristic) {
                 if(visited.find(next) == visited.end()){
                       visited.insert(next);
                     depth[next] = depth[curr] + 1;
+                    int cost= depth[next] + heuristic(next);
                     //essentially g(n) + h(n)!, pushes onto heap
-                    minHeap.push(make_pair(depth[next]+ heuristic(next), next));
+                    minHeap.push(make_pair(cost, next));
                   
                 }
             }
@@ -216,12 +217,35 @@ int main(){
     int num7=0;
     int num8=0;
     int num9=0;
+    int difficulty=0;
     //puzzle to solve
     vector<int> puzzle;
     cout << "Enter '1' if you would like to use a default puzzle. Enter '2' if you would like to enter your own puzzle. " << endl;
     cin >> userPuzzle;
     if(userPuzzle==1){
-        cout << "Select a difficulty level for the puzzle. Enter '1' for easy, '2' for medium, or '3' for hard." << endl;
+        cout << "Select a difficulty level for the puzzle. Enter '1' for Depth 2 Puzzle, '2' for Depth 4 Puzzle, '3' for Depth 8 Puzzle, '4' for Depth 12 Puzzle, '5' for Depth 16 Puzzle, or , '6' for Depth 20 Puzzle." << endl;
+        cin >> difficulty;
+        if(difficulty==1){
+            puzzle = {1, 2, 3, 4, 5, 6, 0, 7, 8};
+        }
+        else if(difficulty==2){
+            puzzle = {1, 2, 3, 5, 0, 6, 4, 7, 8};
+        }
+        else if(difficulty==3){
+            puzzle = {1, 3, 6, 5, 0, 2, 4, 7, 8};
+        }
+        else if(difficulty==4){
+            puzzle = {1, 3, 6, 5, 0, 7, 4, 8, 2};
+        }
+        else if(difficulty==5){
+            puzzle = {1, 6, 7, 5, 0, 3, 4, 8, 2};
+        }
+        else if(difficulty==6){
+            puzzle = {7, 1, 2, 4, 8, 5, 6, 3, 0};
+        }
+        else{
+            cout << "Invalid choice. Please enter 1, 2, 3, 4, 5, or 6." << endl;
+        }
     }
     else if(userPuzzle==2){
         cout << "Enter your 8 puzzle board. First enter in the first row, with 3 numbers and spaces between each number. Use 0 to represent the blank space." << endl;
